@@ -74,10 +74,11 @@ export default function AuthPage() {
   }
 
   // Redirect if already logged in
-  if (user) {
-    navigate("/");
-    return null;
-  }
+  React.useEffect(() => {
+    if (user) {
+      navigate("/");
+    }
+  }, [user, navigate]);
 
   return (
     <div className="flex min-h-screen bg-slate-50 dark:bg-slate-900">
