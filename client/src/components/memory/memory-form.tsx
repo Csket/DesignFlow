@@ -31,12 +31,13 @@ import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 
 // Extend the schema with validation
-const formSchema = insertMemorySchema.extend({
+const formSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters"),
   content: z.string().min(10, "Content must be at least 10 characters"),
   date: z.coerce.date(),
   location: z.string().optional(),
   isPrivate: z.boolean().default(false),
+  userId: z.number().optional(),
   // We'll handle images separately since they're files
 });
 
@@ -100,10 +101,13 @@ export function MemoryForm({ memory, onSuccess }: MemoryFormProps) {
         imageUrls = [...memory.images, ...imageUrls];
       }
       
+      // Make sure the date is properly formatted as a Date object
       const memoryData = {
         ...data,
         userId: user?.id,
         images: imageUrls,
+        // Ensure date is sent as a Date object that can be properly serialized
+        date: data.date instanceof Date ? data.date : new Date(data.date),
       };
       
       if (memory) {

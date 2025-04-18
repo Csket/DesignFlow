@@ -82,10 +82,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     if (!req.isAuthenticated()) return res.status(401).send("Not authenticated");
     
     try {
-      const validatedData = insertMemorySchema.parse({
+      // Make sure the date is properly converted to a Date object
+      const data = {
         ...req.body,
         userId: req.user.id
-      });
+      };
+      
+      // Convert date string to Date object if needed
+      if (data.date && typeof data.date === 'string') {
+        data.date = new Date(data.date);
+      }
+      
+      const validatedData = insertMemorySchema.parse(data);
       
       const memory = await storage.createMemory(validatedData);
       res.status(201).json(memory);
@@ -112,7 +120,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
     
     try {
-      const updatedMemory = await storage.updateMemory(memoryId, req.body);
+      // Convert date string to Date object if needed
+      const updateData = { ...req.body };
+      if (updateData.date && typeof updateData.date === 'string') {
+        updateData.date = new Date(updateData.date);
+      }
+      
+      const updatedMemory = await storage.updateMemory(memoryId, updateData);
       res.json(updatedMemory);
     } catch (error) {
       if (error instanceof z.ZodError) {
