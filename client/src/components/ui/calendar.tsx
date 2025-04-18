@@ -3,10 +3,12 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { DayPicker } from "react-day-picker";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
+import { Memory } from "@shared/schema";
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker> & {
   showMemoryDots?: boolean;
   memoryDates?: Date[];
+  memories?: Memory[];
 };
 
 function Calendar({
@@ -14,24 +16,47 @@ function Calendar({
   classNames,
   showMemoryDots = false,
   memoryDates = [],
+  memories = [],
   ...props
 }: CalendarProps) {
-  // Create a map of date strings to quickly check if a date has memories
+  // Create a map of date strings to memory data
   const memoryDateMap = React.useMemo(() => {
-    if (!showMemoryDots || !memoryDates) return new Map<string, boolean>();
+    if (!memoryDates) return new Map<string, { hasMemory: boolean, imageUrl?: string }>();
     
-    const map = new Map<string, boolean>();
+    const map = new Map<string, { hasMemory: boolean, imageUrl?: string }>();
+    
+    // First add entries for dates with memories (dot indicator)
     memoryDates.forEach(date => {
       // Ensure date is a valid Date object
       if (date instanceof Date && !isNaN(date.getTime())) {
         const dateStr = date.toISOString().split('T')[0];
-        map.set(dateStr, true);
+        map.set(dateStr, { hasMemory: true });
       }
     });
+    
+    // Then add image URLs for dates that have memories with images
+    if (memories && memories.length > 0) {
+      memories.forEach(memory => {
+        if (memory.date && memory.images && memory.images.length > 0) {
+          const date = new Date(memory.date);
+          if (!isNaN(date.getTime())) {
+            const dateStr = date.toISOString().split('T')[0];
+            const existingEntry = map.get(dateStr);
+            
+            // Use the first image as the preview
+            map.set(dateStr, { 
+              hasMemory: true, 
+              imageUrl: memory.images[0] 
+            });
+          }
+        }
+      });
+    }
+    
     return map;
-  }, [memoryDates, showMemoryDots]);
+  }, [memoryDates, memories]);
 
-  // Custom day renderer to add memory indicators
+  // Custom day renderer to add memory indicators and images
   const renderDay = React.useCallback((props: any) => {
     const { date, children } = props;
     
@@ -43,13 +68,29 @@ function Calendar({
     try {
       // Format date to YYYY-MM-DD for lookup in the memory map
       const dateStr = date.toISOString().split('T')[0];
-      const hasMemory = memoryDateMap.get(dateStr);
+      const memoryData = memoryDateMap.get(dateStr);
       
-      // If we have a memory on this date, add the "has-memory" class to show a dot
-      if (hasMemory && showMemoryDots) {
-        return React.cloneElement(children as React.ReactElement, {
-          className: `${(children as React.ReactElement).props.className} has-memory`
-        });
+      if (memoryData && showMemoryDots) {
+        // If there's an image for this date, show it as background
+        if (memoryData.imageUrl) {
+          return (
+            <div className="relative w-full h-full flex items-center justify-center">
+              <div 
+                className="absolute inset-1 rounded-sm bg-cover bg-center opacity-25 hover:opacity-75 transition-opacity"
+                style={{ backgroundImage: `url(${memoryData.imageUrl})` }}
+              ></div>
+              {/* Original day content */}
+              {children}
+              {/* Show the memory dot only if there's no image */}
+              {!memoryData.imageUrl && <div className="has-memory-indicator"></div>}
+            </div>
+          );
+        } else {
+          // If no image, just add the has-memory class for the dot
+          return React.cloneElement(children as React.ReactElement, {
+            className: `${(children as React.ReactElement).props.className} has-memory`
+          });
+        }
       }
     } catch (error) {
       console.error("Error in calendar day rendering:", error);

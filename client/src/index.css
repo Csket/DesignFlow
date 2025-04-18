@@ -74,6 +74,24 @@
     border-radius: 50%;
   }
   
+  /* Memory image in calendar day styling */
+  .rdp-day:hover .absolute {
+    opacity: 0.75 !important;
+  }
+  
+  /* Memory dot when we don't have an image */
+  .has-memory-indicator::after {
+    content: "";
+    position: absolute;
+    bottom: 1px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 5px;
+    height: 5px;
+    background-color: hsl(var(--primary));
+    border-radius: 50%;
+  }
+  
   .memory-action-item {
     position: relative;
   }

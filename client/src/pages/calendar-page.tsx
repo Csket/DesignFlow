@@ -156,6 +156,7 @@ export default function CalendarPage() {
                           className="w-full"
                           showMemoryDots
                           memoryDates={memoryDates}
+                          memories={memories}
                         />
                       </CardContent>
                     </Card>
@@ -176,17 +177,30 @@ export default function CalendarPage() {
                             const isCurrentMonth = isSameMonth(day, currentMonth);
                             const hasMemory = memoryDates.some(memDate => isSameDay(memDate, day));
                             
+                            // Check if there's a memory with an image on this day
+                            const memoryWithImage = memories?.find(memory => 
+                              isSameDay(new Date(memory.date), day) && 
+                              memory.images && 
+                              memory.images.length > 0
+                            );
+                            
                             return (
                               <button
                                 key={i}
                                 className={`
-                                  aspect-square rounded-md flex items-center justify-center text-sm
+                                  aspect-square rounded-md flex items-center justify-center text-sm relative
                                   ${!isCurrentMonth ? 'text-muted-foreground opacity-50' : ''}
                                   ${isSelected ? 'bg-primary text-primary-foreground' : 'hover:bg-accent'}
-                                  ${hasMemory && !isSelected ? 'relative has-memory' : ''}
+                                  ${hasMemory && !isSelected && !memoryWithImage ? 'relative has-memory' : ''}
                                 `}
                                 onClick={() => handleDateSelect(day)}
                               >
+                                {memoryWithImage && !isSelected && (
+                                  <div 
+                                    className="absolute inset-1 rounded-sm bg-cover bg-center opacity-25 hover:opacity-75 transition-opacity"
+                                    style={{ backgroundImage: `url(${memoryWithImage.images[0]})` }}
+                                  ></div>
+                                )}
                                 {format(day, 'd')}
                               </button>
                             );
