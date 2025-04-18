@@ -95,13 +95,28 @@ export default function CalendarPage() {
               <h1 className="text-2xl font-bold mb-2 sm:mb-0">Calendar</h1>
               
               <div className="flex items-center space-x-2">
-                <Tabs value={view} onValueChange={(v) => setView(v as any)} className="mr-2">
-                  <TabsList>
-                    <TabsTrigger value="month">Month</TabsTrigger>
-                    <TabsTrigger value="day">Day</TabsTrigger>
-                    <TabsTrigger value="list">List</TabsTrigger>
-                  </TabsList>
-                </Tabs>
+                <div className="mr-2">
+                  <div className="inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground">
+                    <button 
+                      className={`inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 ${view === 'month' ? 'bg-background text-foreground shadow-sm' : ''}`}
+                      onClick={() => setView('month')}
+                    >
+                      Month
+                    </button>
+                    <button 
+                      className={`inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 ${view === 'day' ? 'bg-background text-foreground shadow-sm' : ''}`}
+                      onClick={() => setView('day')}
+                    >
+                      Day
+                    </button>
+                    <button 
+                      className={`inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 ${view === 'list' ? 'bg-background text-foreground shadow-sm' : ''}`}
+                      onClick={() => setView('list')}
+                    >
+                      List
+                    </button>
+                  </div>
+                </div>
                 
                 <div className="flex items-center space-x-2">
                   <Button variant="outline" size="icon" onClick={goToPreviousMonth}>
@@ -120,104 +135,111 @@ export default function CalendarPage() {
             <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
               {/* Calendar view */}
               <div className={view === "list" ? "md:col-span-12" : "md:col-span-8"}>
-                <TabsContent value="month" className="mt-0">
-                  <Card>
-                    <CardContent className="p-1 sm:p-3">
-                      <div className="text-center py-2 border-b mb-2">
-                        <h2 className="text-lg font-medium">{format(currentMonth, 'MMMM yyyy')}</h2>
-                      </div>
-                      <Calendar
-                        mode="single"
-                        selected={selectedDate}
-                        onSelect={handleDateSelect}
-                        month={currentMonth}
-                        onMonthChange={setCurrentMonth}
-                        className="w-full"
-                        showMemoryDots
-                        memoryDates={memoryDates}
-                      />
-                    </CardContent>
-                  </Card>
-                </TabsContent>
-                
-                <TabsContent value="day" className="mt-0">
-                  <Card className="mb-6">
-                    <CardContent className="p-4">
-                      <h2 className="text-lg font-medium mb-2">{format(selectedDate, 'MMMM d, yyyy')}</h2>
-                      <div className="grid grid-cols-7 gap-2">
-                        {getCalendarDays(currentMonth).slice(0, 7).map((_, i) => (
-                          <div key={i} className="text-center text-xs font-medium text-muted-foreground">
-                            {format(new Date(currentMonth.getFullYear(), currentMonth.getMonth(), i + 1), 'EEE')}
-                          </div>
-                        ))}
-                        {getCalendarDays(currentMonth).map((day, i) => {
-                          const isSelected = isSameDay(day, selectedDate);
-                          const isCurrentMonth = isSameMonth(day, currentMonth);
-                          const hasMemory = memoryDates.some(memDate => isSameDay(memDate, day));
-                          
-                          return (
-                            <button
-                              key={i}
-                              className={`
-                                aspect-square rounded-md flex items-center justify-center text-sm
-                                ${!isCurrentMonth ? 'text-muted-foreground opacity-50' : ''}
-                                ${isSelected ? 'bg-primary text-primary-foreground' : 'hover:bg-accent'}
-                                ${hasMemory && !isSelected ? 'relative has-memory' : ''}
-                              `}
-                              onClick={() => handleDateSelect(day)}
-                            >
-                              {format(day, 'd')}
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </CardContent>
-                  </Card>
-                  
-                  <div className="space-y-4">
-                    {filteredMemories.length === 0 ? (
-                      <div className="bg-white dark:bg-slate-800 rounded-lg p-6 text-center">
-                        <h3 className="font-medium mb-2">No memories for {format(selectedDate, 'MMMM d, yyyy')}</h3>
-                        <p className="text-sm text-muted-foreground">Create a new memory for this date!</p>
-                      </div>
-                    ) : (
-                      filteredMemories.map(memory => (
-                        <MemoryCard
-                          key={memory.id}
-                          memory={memory}
-                          user={getUserById(memory.userId)}
+                <Tabs value={view} onValueChange={(v) => setView(v as any)}>
+                  <TabsList className="hidden">
+                    <TabsTrigger value="month">Month</TabsTrigger>
+                    <TabsTrigger value="day">Day</TabsTrigger>
+                    <TabsTrigger value="list">List</TabsTrigger>
+                  </TabsList>
+                  <TabsContent value="month" className="mt-0">
+                    <Card>
+                      <CardContent className="p-1 sm:p-3">
+                        <div className="text-center py-2 border-b mb-2">
+                          <h2 className="text-lg font-medium">{format(currentMonth, 'MMMM yyyy')}</h2>
+                        </div>
+                        <Calendar
+                          mode="single"
+                          selected={selectedDate}
+                          onSelect={handleDateSelect}
+                          month={currentMonth}
+                          onMonthChange={setCurrentMonth}
+                          className="w-full"
+                          showMemoryDots
+                          memoryDates={memoryDates}
                         />
-                      ))
-                    )}
-                  </div>
-                </TabsContent>
-                
-                <TabsContent value="list" className="mt-0">
-                  <div className="bg-white dark:bg-slate-800 rounded-lg shadow p-4">
-                    <h2 className="text-lg font-medium mb-4">{format(currentMonth, 'MMMM yyyy')} Memories</h2>
+                      </CardContent>
+                    </Card>
+                  </TabsContent>
+                  
+                  <TabsContent value="day" className="mt-0">
+                    <Card className="mb-6">
+                      <CardContent className="p-4">
+                        <h2 className="text-lg font-medium mb-2">{format(selectedDate, 'MMMM d, yyyy')}</h2>
+                        <div className="grid grid-cols-7 gap-2">
+                          {getCalendarDays(currentMonth).slice(0, 7).map((_, i) => (
+                            <div key={i} className="text-center text-xs font-medium text-muted-foreground">
+                              {format(new Date(currentMonth.getFullYear(), currentMonth.getMonth(), i + 1), 'EEE')}
+                            </div>
+                          ))}
+                          {getCalendarDays(currentMonth).map((day, i) => {
+                            const isSelected = isSameDay(day, selectedDate);
+                            const isCurrentMonth = isSameMonth(day, currentMonth);
+                            const hasMemory = memoryDates.some(memDate => isSameDay(memDate, day));
+                            
+                            return (
+                              <button
+                                key={i}
+                                className={`
+                                  aspect-square rounded-md flex items-center justify-center text-sm
+                                  ${!isCurrentMonth ? 'text-muted-foreground opacity-50' : ''}
+                                  ${isSelected ? 'bg-primary text-primary-foreground' : 'hover:bg-accent'}
+                                  ${hasMemory && !isSelected ? 'relative has-memory' : ''}
+                                `}
+                                onClick={() => handleDateSelect(day)}
+                              >
+                                {format(day, 'd')}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </CardContent>
+                    </Card>
                     
-                    {filteredMemories.length === 0 ? (
-                      <div className="text-center py-6">
-                        <p className="text-muted-foreground">No memories for this month</p>
-                      </div>
-                    ) : (
-                      <div className="space-y-4">
-                        {filteredMemories.map(memory => (
-                          <div key={memory.id} className="flex items-center p-3 hover:bg-accent rounded-md">
-                            <div className="w-16 text-center">
-                              <div className="text-sm font-medium">{format(new Date(memory.date), 'd')}</div>
-                              <div className="text-xs text-muted-foreground">{format(new Date(memory.date), 'EEE')}</div>
+                    <div className="space-y-4">
+                      {filteredMemories.length === 0 ? (
+                        <div className="bg-white dark:bg-slate-800 rounded-lg p-6 text-center">
+                          <h3 className="font-medium mb-2">No memories for {format(selectedDate, 'MMMM d, yyyy')}</h3>
+                          <p className="text-sm text-muted-foreground">Create a new memory for this date!</p>
+                        </div>
+                      ) : (
+                        filteredMemories.map(memory => (
+                          <MemoryCard
+                            key={memory.id}
+                            memory={memory}
+                            user={getUserById(memory.userId)}
+                          />
+                        ))
+                      )}
+                    </div>
+                  </TabsContent>
+                  
+                  <TabsContent value="list" className="mt-0">
+                    <div className="bg-white dark:bg-slate-800 rounded-lg shadow p-4">
+                      <h2 className="text-lg font-medium mb-4">{format(currentMonth, 'MMMM yyyy')} Memories</h2>
+                      
+                      {filteredMemories.length === 0 ? (
+                        <div className="text-center py-6">
+                          <p className="text-muted-foreground">No memories for this month</p>
+                        </div>
+                      ) : (
+                        <div className="space-y-4">
+                          {filteredMemories.map(memory => (
+                            <div key={memory.id} className="flex items-center p-3 hover:bg-accent rounded-md">
+                              <div className="w-16 text-center">
+                                <div className="text-sm font-medium">{format(new Date(memory.date), 'd')}</div>
+                                <div className="text-xs text-muted-foreground">{format(new Date(memory.date), 'EEE')}</div>
+                              </div>
+                              <div className="ml-4 flex-1">
+                                <div className="font-medium">{memory.title}</div>
+                                <div className="text-xs text-muted-foreground">{memory.content.substring(0, 60)}...</div>
+                              </div>
                             </div>
-                            <div className="ml-4 flex-1">
-                              <div className="font-medium">{memory.title}</div>
-                              <div className="text-xs text-muted-foreground">{memory.content.substring(0, 60)}...</div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </TabsContent>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </TabsContent>
+                </Tabs>
               </div>
               
               {/* Memory previews - only show on month and day view */}
