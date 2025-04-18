@@ -33,6 +33,10 @@ export default function CalendarPage() {
   // Memory dates for calendar dots
   const memoryDates = useMemo(() => {
     if (!memories) return [];
+    
+    // Log the memories data for debugging
+    console.log("Memories data:", memories);
+    
     return memories.map(memory => new Date(memory.date));
   }, [memories]);
 

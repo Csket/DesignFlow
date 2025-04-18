@@ -36,12 +36,14 @@ function Calendar({
     
     // Then add image URLs for dates that have memories with images
     if (memories && memories.length > 0) {
+      console.log("Processing memories for calendar images:", memories);
       memories.forEach(memory => {
+        console.log("Checking memory:", memory.id, memory.title, "images:", memory.images);
         if (memory.date && memory.images && memory.images.length > 0) {
           const date = new Date(memory.date);
           if (!isNaN(date.getTime())) {
             const dateStr = date.toISOString().split('T')[0];
-            const existingEntry = map.get(dateStr);
+            console.log("Found memory with image for date:", dateStr, "image:", memory.images[0]);
             
             // Use the first image as the preview
             map.set(dateStr, { 
@@ -53,6 +55,7 @@ function Calendar({
       });
     }
     
+    console.log("Final memory date map:", Array.from(map.entries()));
     return map;
   }, [memoryDates, memories]);
 
