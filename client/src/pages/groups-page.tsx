@@ -337,11 +337,9 @@ export default function GroupsPage() {
                           ? `No groups matching "${searchTerm}"` 
                           : "There are no groups available yet. Create the first one!"}
                       </p>
-                      <DialogTrigger asChild>
-                        <Button onClick={() => setCreateDialogOpen(true)}>
-                          Create Group
-                        </Button>
-                      </DialogTrigger>
+                      <Button onClick={() => setCreateDialogOpen(true)}>
+                        Create Group
+                      </Button>
                     </div>
                   )}
                 </TabsContent>
@@ -382,11 +380,9 @@ export default function GroupsPage() {
                         >
                           Browse Groups
                         </Button>
-                        <DialogTrigger asChild>
-                          <Button onClick={() => setCreateDialogOpen(true)}>
-                            Create Group
-                          </Button>
-                        </DialogTrigger>
+                        <Button onClick={() => setCreateDialogOpen(true)}>
+                          Create Group
+                        </Button>
                       </div>
                     </div>
                   )}

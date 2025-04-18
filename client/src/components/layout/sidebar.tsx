@@ -45,21 +45,20 @@ export function Sidebar() {
               <Link 
                 key={item.href} 
                 href={item.href}
-              >
-                <a className={cn(
+                className={cn(
                   "group flex items-center px-2 py-2 text-sm font-medium rounded-md",
                   isActive 
                     ? "bg-primary/10 text-primary" 
                     : "text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
-                )}>
-                  <Icon className={cn(
-                    "mr-3 h-5 w-5",
-                    isActive 
-                      ? "text-primary" 
-                      : "text-slate-400 group-hover:text-slate-500 dark:text-slate-500 dark:group-hover:text-slate-300"
-                  )} />
-                  {item.label}
-                </a>
+                )}
+              >
+                <Icon className={cn(
+                  "mr-3 h-5 w-5",
+                  isActive 
+                    ? "text-primary" 
+                    : "text-slate-400 group-hover:text-slate-500 dark:text-slate-500 dark:group-hover:text-slate-300"
+                )} />
+                {item.label}
               </Link>
             );
           })}
