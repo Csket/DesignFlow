@@ -195,7 +195,7 @@ export default function CalendarPage() {
                                 `}
                                 onClick={() => handleDateSelect(day)}
                               >
-                                {memoryWithImage && !isSelected && (
+                                {memoryWithImage && memoryWithImage.images && memoryWithImage.images.length > 0 && !isSelected && (
                                   <div 
                                     className="absolute inset-1 rounded-sm bg-cover bg-center opacity-25 hover:opacity-75 transition-opacity"
                                     style={{ backgroundImage: `url(${memoryWithImage.images[0]})` }}
