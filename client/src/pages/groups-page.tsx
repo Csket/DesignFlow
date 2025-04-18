@@ -38,6 +38,8 @@ export default function GroupsPage() {
   // Fetch user groups (groups the current user is a member of)
   const { data: userGroups, isLoading: userGroupsLoading } = useQuery<Group[]>({
     queryKey: ['/api/users/groups'],
+    // If there's an error fetching user groups, return undefined and don't retry
+    retry: false
   });
 
   // Form schema for group creation
@@ -302,7 +304,7 @@ export default function GroupsPage() {
               
               <Tabs defaultValue="all" className="w-full">
                 <TabsList className="w-full max-w-md mx-auto">
-                  <TabsTrigger value="all" className="flex-1">All Groups</TabsTrigger>
+                  <TabsTrigger id="all-groups-tab" value="all" className="flex-1">All Groups</TabsTrigger>
                   <TabsTrigger value="myGroups" className="flex-1">My Groups</TabsTrigger>
                 </TabsList>
                 

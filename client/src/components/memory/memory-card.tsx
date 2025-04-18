@@ -126,12 +126,10 @@ export function MemoryCard({ memory, user, onEdit, onDelete }: MemoryCardProps) 
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DialogTrigger asChild onClick={() => setEditDialogOpen(true)}>
-                  <DropdownMenuItem>
-                    <FileEdit className="mr-2 h-4 w-4" />
-                    Edit
-                  </DropdownMenuItem>
-                </DialogTrigger>
+                <DropdownMenuItem onClick={() => setEditDialogOpen(true)}>
+                  <FileEdit className="mr-2 h-4 w-4" />
+                  Edit
+                </DropdownMenuItem>
                 <AlertDialogTrigger asChild onClick={() => setDeleteDialogOpen(true)}>
                   <DropdownMenuItem className="text-red-500">
                     <Trash2 className="mr-2 h-4 w-4" />
