@@ -18,31 +18,46 @@ function Calendar({
 }: CalendarProps) {
   // Create a map of date strings to quickly check if a date has memories
   const memoryDateMap = React.useMemo(() => {
-    if (!showMemoryDots) return new Map<string, boolean>();
+    if (!showMemoryDots || !memoryDates) return new Map<string, boolean>();
     
     const map = new Map<string, boolean>();
     memoryDates.forEach(date => {
-      const dateStr = date.toISOString().split('T')[0];
-      map.set(dateStr, true);
+      // Ensure date is a valid Date object
+      if (date instanceof Date && !isNaN(date.getTime())) {
+        const dateStr = date.toISOString().split('T')[0];
+        map.set(dateStr, true);
+      }
     });
     return map;
   }, [memoryDates, showMemoryDots]);
 
   // Custom day renderer to add memory indicators
-  const renderDay = React.useCallback((day: Date, cellProps: any) => {
-    const dateStr = day.toISOString().split('T')[0];
-    const hasMemory = memoryDateMap.get(dateStr);
+  const renderDay = React.useCallback((props: any) => {
+    const { date, children } = props;
     
-    return (
-      <div
-        className={cn(
-          "relative w-full h-full flex items-center justify-center",
-          hasMemory && showMemoryDots ? "has-memory" : ""
-        )}
-      >
-        {cellProps.children}
-      </div>
-    );
+    // If date is not a valid Date object, just render the cell without memory indicator
+    if (!date || !(date instanceof Date) || isNaN(date.getTime())) {
+      return children;
+    }
+    
+    try {
+      // Format date to YYYY-MM-DD for lookup in the memory map
+      const dateStr = date.toISOString().split('T')[0];
+      const hasMemory = memoryDateMap.get(dateStr);
+      
+      // If we have a memory on this date, add the "has-memory" class to show a dot
+      if (hasMemory && showMemoryDots) {
+        return React.cloneElement(children as React.ReactElement, {
+          className: `${(children as React.ReactElement).props.className} has-memory`
+        });
+      }
+    } catch (error) {
+      console.error("Error in calendar day rendering:", error);
+      // Fallback to just returning the children if there's an error
+    }
+    
+    // Return the unmodified children if there's no memory or if there was an error
+    return children;
   }, [memoryDateMap, showMemoryDots]);
 
   return (

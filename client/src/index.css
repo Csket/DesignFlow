@@ -61,14 +61,15 @@
     aspect-ratio: 1/1;
   }
   
-  .calendar-day.has-memory::after {
+  .calendar-day.has-memory::after,
+  .has-memory::after {
     content: "";
     position: absolute;
-    bottom: 4px;
+    bottom: 1px;
     left: 50%;
     transform: translateX(-50%);
-    width: 4px;
-    height: 4px;
+    width: 5px;
+    height: 5px;
     background-color: hsl(var(--primary));
     border-radius: 50%;
   }

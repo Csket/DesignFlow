@@ -33,24 +33,26 @@ export function MobileNav() {
             const isActive = location === item.href;
             
             return (
-              <Link key={item.href} href={item.href}>
-                <a className="flex flex-col items-center py-2 px-3">
-                  <Icon className={cn(
-                    "h-6 w-6",
-                    isActive 
-                      ? "text-primary" 
-                      : "text-slate-500 dark:text-slate-400"
-                  )} />
-                  <span className={cn(
-                    "text-xs mt-1",
-                    isActive 
-                      ? "text-primary font-medium" 
-                      : "text-slate-500 dark:text-slate-400"
-                  )}>
-                    {item.label}
-                  </span>
-                </a>
-              </Link>
+              <div key={item.href} className="w-full text-center">
+                <Link href={item.href}>
+                  <div className="flex flex-col items-center py-2 px-3 cursor-pointer">
+                    <Icon className={cn(
+                      "h-6 w-6",
+                      isActive 
+                        ? "text-primary" 
+                        : "text-slate-500 dark:text-slate-400"
+                    )} />
+                    <span className={cn(
+                      "text-xs mt-1",
+                      isActive 
+                        ? "text-primary font-medium" 
+                        : "text-slate-500 dark:text-slate-400"
+                    )}>
+                      {item.label}
+                    </span>
+                  </div>
+                </Link>
+              </div>
             );
           })}
         </div>
