@@ -231,7 +231,15 @@ export default function ProfilePage() {
                       <MemoryCard
                         key={memory.id}
                         memory={memory}
-                        user={user}
+                        user={
+                          user
+                            ? {
+                                ...user,
+                                displayName: user.displayName ?? undefined,
+                                avatar: user.avatar ?? undefined,
+                              }
+                            : undefined
+                        }
                       />
                     ))}
                   </div>

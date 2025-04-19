@@ -58,7 +58,13 @@ export default function HomePage() {
 
   // Get user details for a memory
   const getUserForMemory = (memory: Memory) => {
-    return users?.find(u => u.id === memory.userId);
+    const u = users?.find(u => u.id === memory.userId);
+    if (!u) return undefined;
+    return {
+      ...u,
+      displayName: u.displayName ?? undefined,
+      avatar: u.avatar ?? undefined,
+    };
   };
 
   return (

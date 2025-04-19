@@ -58,6 +58,7 @@ export function MemoryForm({ memory, onSuccess }: MemoryFormProps) {
       ? {
           ...memory,
           date: new Date(memory.date),
+          location: memory.location ?? undefined,
         }
       : {
           title: "",

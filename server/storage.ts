@@ -1,11 +1,11 @@
 import { users, type User, type InsertUser, memories, type Memory, type InsertMemory, friends, type Friend, type InsertFriend, groups, type Group, type InsertGroup, groupMembers, type GroupMember, type InsertGroupMember, notifications, type Notification, type InsertNotification, comments, type Comment, type InsertComment } from "@shared/schema";
 import createMemoryStore from "memorystore";
-import session from "express-session";
+import session, { Store as SessionStore } from "express-session";
 
 // Define the storage interface
 export interface IStorage {
   // Session store
-  sessionStore: session.SessionStore;
+  sessionStore: SessionStore;
   
   // User operations
   getUser(id: number): Promise<User | undefined>;
@@ -70,7 +70,7 @@ export class MemStorage implements IStorage {
   private groupMembers: Map<number, GroupMember>;
   private notifications: Map<number, Notification>;
   private comments: Map<number, Comment>;
-  sessionStore: session.SessionStore;
+  sessionStore: SessionStore;
   
   private userIdCounter: number;
   private memoryIdCounter: number;
@@ -119,7 +119,10 @@ export class MemStorage implements IStorage {
     const user: User = { 
       ...userData, 
       id, 
-      createdAt: now 
+      createdAt: now,
+      displayName: userData.displayName ?? null,
+      bio: userData.bio ?? null,
+      avatar: userData.avatar ?? null,
     };
     this.users.set(id, user);
     return user;
@@ -151,7 +154,10 @@ export class MemStorage implements IStorage {
     const memory: Memory = {
       ...memoryData,
       id,
-      createdAt: now
+      createdAt: now,
+      images: memoryData.images ?? null,
+      location: memoryData.location ?? null,
+      isPrivate: memoryData.isPrivate ?? false,
     };
     this.memories.set(id, memory);
     return memory;
@@ -162,8 +168,13 @@ export class MemStorage implements IStorage {
     if (!memory) {
       throw new Error("Memory not found");
     }
-    
-    const updatedMemory = { ...memory, ...memoryData };
+    const updatedMemory: Memory = {
+      ...memory,
+      ...memoryData,
+      images: memoryData.images ?? memory.images ?? null,
+      location: memoryData.location ?? memory.location ?? null,
+      isPrivate: memoryData.isPrivate ?? memory.isPrivate ?? false,
+    };
     this.memories.set(id, updatedMemory);
     return updatedMemory;
   }
@@ -331,7 +342,9 @@ export class MemStorage implements IStorage {
     const group: Group = {
       ...groupData,
       id,
-      createdAt: now
+      createdAt: now,
+      avatar: groupData.avatar ?? null,
+      description: groupData.description ?? null,
     };
     this.groups.set(id, group);
     return group;
@@ -342,8 +355,12 @@ export class MemStorage implements IStorage {
     if (!group) {
       throw new Error("Group not found");
     }
-    
-    const updatedGroup = { ...group, ...groupData };
+    const updatedGroup: Group = {
+      ...group,
+      ...groupData,
+      avatar: groupData.avatar ?? group.avatar ?? null,
+      description: groupData.description ?? group.description ?? null,
+    };
     this.groups.set(id, updatedGroup);
     return updatedGroup;
   }
@@ -432,7 +449,9 @@ export class MemStorage implements IStorage {
     const notification: Notification = {
       ...notificationData,
       id,
-      createdAt: now
+      createdAt: now,
+      read: notificationData.read ?? false,
+      relatedId: notificationData.relatedId ?? null,
     };
     this.notifications.set(id, notification);
     return notification;
